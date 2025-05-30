@@ -1,0 +1,87 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Scratch to Reveal</title>
+  <style>
+    html, body {
+      margin: 0;
+      padding: 0;
+      overflow: hidden;
+      height: 100%;
+      background: #f5e5d2;
+      font-family: sans-serif;
+    }
+    #wrapper {
+      position: relative;
+      width: 100vw;
+      height: 100vh;
+      overflow: hidden;
+    }
+    img, canvas {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+      touch-action: none;
+    }
+  </style>
+</head>
+<body>
+  <div id="wrapper">
+    <img id="inviteImage" src="Save The Date draft-2.jpg" alt="Wedding Invite">
+    <canvas id="scratchCanvas"></canvas>
+  </div>
+
+  <script>
+    const canvas = document.getElementById('scratchCanvas');
+    const ctx = canvas.getContext('2d');
+    const image = document.getElementById('inviteImage');
+
+    image.onload = () => {
+      canvas.width = image.naturalWidth;
+      canvas.height = image.naturalHeight;
+
+      canvas.style.width = "100%";
+      canvas.style.height = "100%";
+
+      const centerX = canvas.width / 2;
+      const centerY = canvas.height * 0.6;
+      const radius = 330;
+
+      ctx.fillStyle = '#C0C0C0';
+      ctx.beginPath();
+      ctx.arc(centerX, centerY, radius, 0, Math.PI * 2);
+      ctx.fill();
+
+      ctx.globalCompositeOperation = 'destination-out';
+
+      function scratch(x, y) {
+        const rect = canvas.getBoundingClientRect();
+        const scaleX = canvas.width / rect.width;
+        const scaleY = canvas.height / rect.height;
+
+        const dx = (x - rect.left) * scaleX;
+        const dy = (y - rect.top) * scaleY;
+
+        ctx.beginPath();
+        ctx.arc(dx, dy, 60, 0, Math.PI * 2);  // Increased radius to 60
+        ctx.fill();
+      }
+
+      canvas.addEventListener('mousemove', (e) => {
+        if (e.buttons === 1) scratch(e.clientX, e.clientY);
+      });
+
+      canvas.addEventListener('touchmove', (e) => {
+        e.preventDefault();
+        const touch = e.touches[0];
+        scratch(touch.clientX, touch.clientY);
+      });
+    };
+  </script>
+</body>
+</html>
